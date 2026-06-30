@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Se for um arquivo ou pasta real, não reescreve
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Redireciona tudo para a pasta public
+RewriteRule ^(.*)$ public/$1 [L]
