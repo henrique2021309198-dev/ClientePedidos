@@ -30,8 +30,15 @@
     </div>
 
     <script>
+        const DEBUG_FLOW = true;
+        function logFlow(event, payload = {}) {
+            if (!DEBUG_FLOW) return;
+            console.log(`[ClientePedidos][Carrinho] ${event}`, payload);
+        }
+
         const totem = JSON.parse(localStorage.getItem('pedidoTotem') || 'null');
         if (!totem || !totem.id) {
+            logFlow('Totem ausente, redirecionando', { totem });
             window.location.href = '<?= site_url('/?totem=obrigatorio') ?>';
         }
 
@@ -43,14 +50,17 @@
 
         function saveCart() {
             localStorage.setItem('pedidoCart', JSON.stringify(cart));
+            logFlow('Carrinho salvo no localStorage', { carrinho: cart });
         }
 
         function updateQuantity(id, delta) {
             const item = cart.find(i => i.id === id);
             if (!item) return;
             item.quantidade += delta;
+            logFlow('Quantidade alterada', { id, delta, quantidadeAtual: item.quantidade });
             if (item.quantidade <= 0) {
                 const index = cart.findIndex(i => i.id === id);
+                logFlow('Item removido do carrinho', { itemRemovido: cart[index] });
                 cart.splice(index, 1);
             }
             saveCart();
@@ -95,6 +105,7 @@
         }
 
         renderCart();
+        logFlow('Página de carrinho carregada', { totem, carrinho: cart });
     </script>
 </body>
 </html>

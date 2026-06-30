@@ -142,7 +142,7 @@
         <div class="card">
             <span class="eyebrow">Configuracao do local</span>
             <h1>Selecionar totem</h1>
-            <p class="lead">Use esta tela apenas quando o dispositivo for instalado ou movido de lugar. Depois disso, o cliente vera apenas a tela de iniciar pedido.</p>
+            <p class="lead">Selecione o totem deste dispositivo e depois toque em iniciar sistema para abrir a tela de inicio do cliente.</p>
 
             <div class="status-card">
                 <div>
@@ -165,7 +165,7 @@
             </div>
 
             <div class="actions">
-                <button type="button" class="btn btn-primary" id="salvarTotemBtn">Salvar e abrir inicio</button>
+                <button type="button" class="btn btn-primary" id="salvarTotemBtn">Iniciar sistema</button>
                 <button type="button" class="btn btn-secondary" id="cancelarBtn">Voltar</button>
             </div>
 
@@ -174,6 +174,12 @@
     </div>
 
     <script>
+        const DEBUG_FLOW = true;
+        function logFlow(event, payload = {}) {
+            if (!DEBUG_FLOW) return;
+            console.log(`[ClientePedidos][Totem] ${event}`, payload);
+        }
+
         const storageKey = 'pedidoTotem';
 
         function getSelectedTotem() {
@@ -199,6 +205,7 @@
 
             text.textContent = `${current.nome}${current.codigo ? ` (${current.codigo})` : ''}`;
             pill.textContent = 'Configurado';
+            logFlow('Totem identificado no dispositivo', current);
         }
 
         async function loadTotens() {
@@ -209,6 +216,7 @@
                 const response = await fetch('<?= site_url('api/totens') ?>');
                 const data = await response.json();
                 const totems = data.totens || [];
+                logFlow('Totens carregados', { total: totems.length, totems });
 
                 select.innerHTML = '<option value="">Selecione o totem</option>';
                 totems.forEach(totem => {
@@ -253,6 +261,7 @@
                     nome: data.totem.nome,
                     codigo: data.totem.codigo || ''
                 }));
+                logFlow('Totem criado e salvo localmente', data.totem);
                 document.getElementById('novoTotemNome').value = '';
                 await loadTotens();
                 renderCurrentTotem();
@@ -278,14 +287,19 @@
                 nome: option.dataset.nome || option.textContent,
                 codigo: option.dataset.codigo || ''
             }));
+            logFlow('Totem selecionado e salvo', {
+                id: Number(select.value),
+                nome: option.dataset.nome || option.textContent,
+                codigo: option.dataset.codigo || ''
+            });
 
-            window.location.href = '<?= site_url('/') ?>';
+            window.location.href = '<?= site_url('inicio') ?>';
         });
 
         document.getElementById('cancelarBtn').addEventListener('click', function () {
             const current = getSelectedTotem();
             if (current && current.id) {
-                window.location.href = '<?= site_url('/') ?>';
+                window.location.href = '<?= site_url('inicio') ?>';
                 return;
             }
 
@@ -303,6 +317,7 @@
 
         renderCurrentTotem();
         loadTotens();
+        logFlow('Página de configuração de totem carregada');
     </script>
 </body>
 </html>

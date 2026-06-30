@@ -38,7 +38,7 @@
                 <span>R$ <?= number_format((float)$total, 2, ',', '.') ?></span>
             </div>
 
-            <a class="btn" href="<?= site_url('/?pedidoFinalizado=1') ?>">Voltar para o inicio</a>
+            <a class="btn" href="<?= site_url('inicio?pedidoFinalizado=1') ?>">Voltar para o inicio</a>
             <p class="notice" id="redirectNotice">Voce sera redirecionado para o inicio em 8 segundos.</p>
             <p class="notice">O totem deste dispositivo sera mantido para o proximo atendimento.</p>
         </div>
@@ -48,7 +48,7 @@
         localStorage.removeItem('pedidoCart');
 
         let seconds = 8;
-        const redirectUrl = '<?= site_url('/?pedidoFinalizado=1') ?>';
+        const redirectUrl = '<?= site_url('inicio?pedidoFinalizado=1') ?>';
         const notice = document.getElementById('redirectNotice');
 
         const timer = setInterval(() => {

@@ -138,7 +138,6 @@
 
             <div class="actions">
                 <button id="startBtn" class="btn btn-primary">Iniciar pedido</button>
-                <button type="button" id="changeTotemBtn" class="btn btn-secondary">Configurar outro totem</button>
             </div>
 
             <div class="error-msg" id="homeMessage"></div>
@@ -180,10 +179,6 @@
 
             localStorage.removeItem('pedidoCart');
             window.location.href = '<?= site_url('produtos') ?>';
-        });
-
-        document.getElementById('changeTotemBtn').addEventListener('click', function () {
-            window.location.href = '<?= site_url('totem?configurarTotem=1') ?>';
         });
 
         const searchParams = new URLSearchParams(window.location.search);

@@ -36,8 +36,15 @@
     </div>
 
     <script>
+        const DEBUG_FLOW = true;
+        function logFlow(event, payload = {}) {
+            if (!DEBUG_FLOW) return;
+            console.log(`[ClientePedidos][Checkout] ${event}`, payload);
+        }
+
         const totem = JSON.parse(localStorage.getItem('pedidoTotem') || 'null');
         if (!totem || !totem.id) {
+            logFlow('Totem ausente, redirecionando', { totem });
             window.location.href = '<?= site_url('/?totem=obrigatorio') ?>';
         }
 
@@ -78,6 +85,7 @@
                 totem_id: Number((JSON.parse(localStorage.getItem('pedidoTotem') || 'null') || {}).id || 0),
                 totem_nome: (JSON.parse(localStorage.getItem('pedidoTotem') || 'null') || {}).nome || ''
             };
+            logFlow('Payload enviado para checkout', payload);
 
             try {
                 const response = await fetch('<?= site_url('api/checkout') ?>', {
@@ -86,6 +94,7 @@
                     body: JSON.stringify(payload)
                 });
                 const data = await response.json();
+                logFlow('Resposta checkout', { status: response.status, data });
 
                 if (data.success) {
                     localStorage.removeItem('pedidoCart');
@@ -94,11 +103,13 @@
                     alert(data.error || 'Erro ao finalizar pedido.');
                 }
             } catch (error) {
+                logFlow('Erro de conexão no checkout', { error: error.message || error });
                 alert('Erro de conexão com a API.');
             }
         });
 
         renderSummary();
+        logFlow('Página de checkout carregada', { totem, carrinho: cart });
     </script>
 </body>
 </html>

@@ -9,6 +9,11 @@ class ClientePedido extends BaseController
 
     public function index(): string
     {
+        return view('cliente_pedido/totem');
+    }
+
+    public function inicio(): string
+    {
         return view('cliente_pedido/home');
     }
 

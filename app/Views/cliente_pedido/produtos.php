@@ -169,8 +169,15 @@
     </button>
 
     <script>
+        const DEBUG_FLOW = true;
+        function logFlow(event, payload = {}) {
+            if (!DEBUG_FLOW) return;
+            console.log(`[ClientePedidos][Produtos] ${event}`, payload);
+        }
+
         const totem = JSON.parse(localStorage.getItem('pedidoTotem') || 'null');
         if (!totem || !totem.id) {
+            logFlow('Totem ausente, redirecionando para configuração', { totem });
             window.location.href = '<?= site_url('totem?totem=obrigatorio') ?>';
         }
 
@@ -206,12 +213,18 @@
             }
             localStorage.setItem('pedidoCart', JSON.stringify(cart));
             updateCartCount();
+            logFlow('Item adicionado no carrinho', {
+                produto: { id: product.id, nome: product.nome },
+                carrinho: cart,
+            });
         }
 
         async function loadProducts() {
             try {
+                logFlow('Buscando produtos na API');
                 const response = await fetch('<?= site_url('api/produtos') ?>');
                 const data = await response.json();
+                logFlow('Resposta da API de produtos', { status: response.status, total: (data.produtos || []).length });
 
                 if (data.error) {
                     throw new Error(data.error);
@@ -228,6 +241,7 @@
                     button.className = category === selectedCategory ? 'active' : '';
                     button.addEventListener('click', () => {
                         selectedCategory = category;
+                        logFlow('Filtro de categoria alterado', { categoria: category });
                         renderProducts();
                         document.querySelectorAll('#filters button').forEach(btn => btn.classList.remove('active'));
                         button.classList.add('active');
@@ -273,6 +287,7 @@
 
         updateCartCount();
         renderTotemBadge();
+        logFlow('Página de produtos carregada', { totem, carrinho: cart });
         loadProducts();
     </script>
 </body>
